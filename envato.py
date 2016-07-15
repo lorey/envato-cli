@@ -3,13 +3,17 @@ import csv
 import optparse
 import urllib
 import requests
+import sys
 from bs4 import BeautifulSoup, NavigableString
+from tabulate import tabulate
 
 
 def main():
     p = optparse.OptionParser()
+
     p.add_option('--pages', '-p', default=1, help="Number of pages to fetch")
     p.add_option('--search', '-s', default='', help="Term to search for")
+    p.add_option('--output', '-o', default='table', help="The output format (csv or table)")
 
     options, arguments = p.parse_args()
 
@@ -39,15 +43,28 @@ def main():
         if len(items) % 30 != 0:
             break
 
+    if options.output == 'table':
+        output_table(items)
+    elif options.output == 'csv':
+        output_csv(items)
+
+
+def output_csv(items):
     listWriter = csv.DictWriter(
-        open('items.csv', 'w', newline=''),
-        fieldnames=items[0].keys(),
-        delimiter=';',
-        quotechar='"',
-        quoting=csv.QUOTE_MINIMAL
+            sys.stdout,
+            fieldnames=items[0].keys(),
+            delimiter=';',
+            quotechar='"',
+            quoting=csv.QUOTE_MINIMAL
     )
+    listWriter.writeheader()
     for a in items:
         listWriter.writerow(a)
+
+
+def output_table(items):
+    table = tabulate(items, headers='keys')
+    print(table)
 
 
 def get_url(page=1, term=''):

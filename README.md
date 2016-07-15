@@ -13,10 +13,10 @@ These are some examples of how to use envato-cli.
     python3 envato.py --help
 
 ### Listing the best admin templates
-    todo
+    python3 envato.py -p 5 -s admin
 
-### Storing search results as a CSV file
-    todo
+### Storing search results for string "test" as a CSV file
+    python3 envato.py -p 5 -s test -o "csv" > items.csv
 
 ## Installation
 envato-cli depends on BeatifulSoup for parsing the HTML files, so please make sure it is installed
