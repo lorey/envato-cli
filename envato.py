@@ -40,11 +40,11 @@ def main():
             break
 
     listWriter = csv.DictWriter(
-            open('items.csv', 'w', newline=''),
-            fieldnames=items[0].keys(),
-            delimiter=';',
-            quotechar='"',
-            quoting=csv.QUOTE_ALL
+        open('items.csv', 'w', newline=''),
+        fieldnames=items[0].keys(),
+        delimiter=';',
+        quotechar='"',
+        quoting=csv.QUOTE_MINIMAL
     )
     for a in items:
         listWriter.writerow(a)
