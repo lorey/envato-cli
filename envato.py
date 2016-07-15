@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup, NavigableString
 def main():
     p = optparse.OptionParser()
     p.add_option('--pages', '-p', default=1, help="Number of pages to fetch")
-    p.add_option('--search', '-s', default="", help="Term to search for")
+    p.add_option('--search', '-s', default='', help="Term to search for")
 
     options, arguments = p.parse_args()
 
@@ -17,15 +17,28 @@ def main():
     pages = int(options.pages)
 
     items = []
-    for page in range(1, pages + 1):
-        url = get_url(page, term=options.term)
+    for page_number in range(1, pages + 1):
+        url = get_url(page_number, term=options.search)
         r = requests.get(url)
+
+        if r.status_code == 302:
+            # 302 means last page was exceeded
+            # just break to save results
+            break
+        elif r.status_code != 200:
+            exit('HTTP code is ' + str(r.status))
+
         soup = BeautifulSoup(r.text, 'html.parser')
 
         product_list = soup.findAll(attrs={'class': 'product-list'})[0]
         for li in product_list.contents:
             if not isinstance(li, NavigableString):
                 items.append(extract_item(li))
+
+        # break if there are no more results (last page)
+        if len(items) % 30 != 0:
+            break
+
     listWriter = csv.DictWriter(
             open('items.csv', 'w', newline=''),
             fieldnames=items[0].keys(),
