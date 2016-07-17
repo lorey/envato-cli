@@ -18,27 +18,26 @@ def main():
     options, arguments = p.parse_args()
 
     # extract options
-    page_count = int(options.pages)
+    max_page_count = int(options.pages)
     search_term = options.search
     output_format = options.output
 
     # fetch pages
-    pages = []
-    for page_number in range(1, page_count + 1):
-        url = get_url(page_number, term=search_term)
-        r = requests.get(url)
-
-        if r.status_code == 302:
-            # 302 means last page was exceeded
-            # just break to save results
-            break
-        elif r.status_code != 200:
-            exit('HTTP code is ' + str(r.status))
-
-        # only save text to save space
-        pages.append(r.text)
+    pages = fetch_html_pages(max_page_count, search_term)
 
     # extract items
+    items = extract_items(pages)
+
+    # generate ouput
+    if output_format == 'table':
+        output_table(items)
+    elif output_format == 'csv':
+        output_csv(items)
+    else:
+        exit('Unknown output format')
+
+
+def extract_items(pages):
     items = []
     for page in pages:
         soup = BeautifulSoup(page, 'html.parser')
@@ -48,17 +47,27 @@ def main():
             if not isinstance(li, NavigableString):
                 items.append(extract_item(li))
 
-        # break if there are no more results (last page)
-        if len(items) % 30 != 0:
-            break
+    return items
 
-    # generate ouput
-    if output_format == 'table':
-        output_table(items)
-    elif output_format == 'csv':
-        output_csv(items)
-    else:
-        exit('Unknown output format')
+
+def fetch_html_pages(page_count, search_term):
+    pages = []
+    for page_number in range(1, page_count + 1):
+        url = get_url(page_number, term=search_term)
+        r = requests.get(url)
+
+        if r.status_code == 302:
+            # 302 means last page was exceeded
+            # -> exit loop
+            break
+        elif r.status_code != 200:
+            # unexpected status code
+            exit('HTTP code is ' + str(r.status))
+
+        # only save text to save space
+        pages.append(r.text)
+
+    return pages
 
 
 def output_csv(items):
