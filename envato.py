@@ -18,10 +18,11 @@ def main():
     options, arguments = p.parse_args()
 
     # how many pages to fetch
-    pages = int(options.pages)
+    page_count = int(options.pages)
 
-    items = []
-    for page_number in range(1, pages + 1):
+    # fetch pages
+    pages = []
+    for page_number in range(1, page_count + 1):
         url = get_url(page_number, term=options.search)
         r = requests.get(url)
 
@@ -32,7 +33,13 @@ def main():
         elif r.status_code != 200:
             exit('HTTP code is ' + str(r.status))
 
-        soup = BeautifulSoup(r.text, 'html.parser')
+        # only save text to save space
+        pages.append(r.text)
+
+    # extract items
+    items = []
+    for page in pages:
+        soup = BeautifulSoup(page, 'html.parser')
 
         product_list = soup.findAll(attrs={'class': 'product-list'})[0]
         for li in product_list.contents:

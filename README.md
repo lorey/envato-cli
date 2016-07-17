@@ -31,7 +31,7 @@ The following Python 3 packages are required:
 * requests
 * sys
 
-You should be able to install them via pip.
+You should be able to install them via pip if necessary.
 
 ## Contributions
 Just open a pull request and I will deal with the rest. Keep in mind that I am not a regular Python programmer, so my
