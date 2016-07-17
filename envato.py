@@ -17,13 +17,15 @@ def main():
 
     options, arguments = p.parse_args()
 
-    # how many pages to fetch
+    # extract options
     page_count = int(options.pages)
+    search_term = options.search
+    output_format = options.output
 
     # fetch pages
     pages = []
     for page_number in range(1, page_count + 1):
-        url = get_url(page_number, term=options.search)
+        url = get_url(page_number, term=search_term)
         r = requests.get(url)
 
         if r.status_code == 302:
@@ -50,23 +52,26 @@ def main():
         if len(items) % 30 != 0:
             break
 
-    if options.output == 'table':
+    # generate ouput
+    if output_format == 'table':
         output_table(items)
-    elif options.output == 'csv':
+    elif output_format == 'csv':
         output_csv(items)
+    else:
+        exit('Unknown output format')
 
 
 def output_csv(items):
-    listWriter = csv.DictWriter(
+    list_writer = csv.DictWriter(
             sys.stdout,
             fieldnames=items[0].keys(),
             delimiter=';',
             quotechar='"',
             quoting=csv.QUOTE_MINIMAL
     )
-    listWriter.writeheader()
+    list_writer.writeheader()
     for a in items:
-        listWriter.writerow(a)
+        list_writer.writerow(a)
 
 
 def output_table(items):
