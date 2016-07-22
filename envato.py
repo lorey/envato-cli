@@ -2,6 +2,8 @@
 import csv
 import optparse
 import urllib
+from urllib.parse import urljoin
+
 import requests
 import sys
 from bs4 import BeautifulSoup, NavigableString
@@ -103,7 +105,7 @@ def get_url(page=1, term='', category=''):
         # grid
         'view': 'list',
         # empty (is newest), sales, rating, price-asc, price-desc
-        'sort': 'trending',
+        'sort': 'sales',
         # this-year, this-month, this-week, this-day
         'date': '',
         # site-templates, wordpress, psd-templates, marketing, ecommerce, cms-themes, muse-templates, blogging,
@@ -124,15 +126,27 @@ def get_url(page=1, term='', category=''):
 def extract_item(li):
     template = {}
 
+    # heading
     heading = li.findAll("h3")[0]
     template['name'] = heading.text.strip()
-    template['link'] = heading.a['href']
 
-    template['price'] = li.findAll(attrs={'class': 'product-list__price'})[0].text.strip()
+    # template url
+    template_link_relative = heading.a['href']
+    template['link'] = make_link_absolute(template_link_relative)
+
+    # price
+    template['price'] = li.findAll(attrs={'class': 'product-list__price'})[0].text.strip().replace('$', '')
+
+    # demo url
     if len(li.findAll(attrs={'class': 'item-thumbnail__preview'})) == 1:
-        template['demo'] = li.findAll(attrs={'class': 'item-thumbnail__preview'})[0].a['href']
+        template_demo_relative = li.findAll(attrs={'class': 'item-thumbnail__preview'})[0].a['href']
+        template['demo'] = make_link_absolute(template_demo_relative)
 
     return template
+
+
+def make_link_absolute(url):
+    return urljoin('https://themeforest.net/', url)
 
 
 if __name__ == '__main__':
