@@ -11,6 +11,10 @@ from tabulate import tabulate
 def main():
     p = optparse.OptionParser()
 
+    p.add_option('--category', '-c', default='',
+                 help="The category to choose (site-templates, wordpress, psd-templates, marketing, ecommerce, "
+                      + "cms-themes, muse-templates, blogging, courses, sketch-templates, forums, "
+                      + "static-site-generators, typeengine-themes)")
     p.add_option('--pages', '-p', default=1, help="Number of pages to fetch")
     p.add_option('--search', '-s', default='', help="Term to search for")
     p.add_option('--output', '-o', default='table', help="The output format (csv or table)")
@@ -18,12 +22,13 @@ def main():
     options, arguments = p.parse_args()
 
     # extract options
+    category = options.category
     max_page_count = int(options.pages)
     search_term = options.search
     output_format = options.output
 
     # fetch pages
-    pages = fetch_html_pages(max_page_count, search_term)
+    pages = fetch_html_pages(max_page_count, search_term, category)
 
     # extract items
     items = extract_items(pages)
@@ -50,10 +55,10 @@ def extract_items(pages):
     return items
 
 
-def fetch_html_pages(page_count, search_term):
+def fetch_html_pages(page_count, search_term, category):
     pages = []
     for page_number in range(1, page_count + 1):
-        url = get_url(page_number, term=search_term)
+        url = get_url(page_number, term=search_term, category=category)
         r = requests.get(url)
 
         if r.status_code == 302:
@@ -72,11 +77,11 @@ def fetch_html_pages(page_count, search_term):
 
 def output_csv(items):
     list_writer = csv.DictWriter(
-            sys.stdout,
-            fieldnames=items[0].keys(),
-            delimiter=';',
-            quotechar='"',
-            quoting=csv.QUOTE_MINIMAL
+        sys.stdout,
+        fieldnames=items[0].keys(),
+        delimiter=';',
+        quotechar='"',
+        quoting=csv.QUOTE_MINIMAL
     )
     list_writer.writeheader()
     for a in items:
@@ -88,7 +93,7 @@ def output_table(items):
     print(table)
 
 
-def get_url(page=1, term=''):
+def get_url(page=1, term='', category=''):
     # https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlencode
     query = {
         'page': page,
@@ -103,7 +108,7 @@ def get_url(page=1, term=''):
         'date': '',
         # site-templates, wordpress, psd-templates, marketing, ecommerce, cms-themes, muse-templates, blogging,
         #  courses, sketch-templates, forums, static-site-generators, typeengine-themes
-        'category': 'site-templates/admin-templates',
+        'category': category,
         # int
         'price_min': '',
         # int

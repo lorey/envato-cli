@@ -14,8 +14,8 @@ These are some examples of how to use envato-cli.
 Lists all available commands and parameters.
 
 ### Listing the best admin templates
-    python3 envato.py -p 5 -s "admin"
-Lists the best admin templates (-s "admin") from the first five pages (-p 5).
+    python3 envato.py -p 5 -c "site-templates" -s "admin"
+Lists the best admin templates (-s "admin") from the "site-template" category on the first five pages (-p 5).
 
 ### Storing search results for string "test" as a CSV file
     python3 envato.py -p 5 -s test -o "csv" > items.csv
@@ -23,7 +23,7 @@ Saves the best templates that contain the word test (-s "test") into `items.csv`
 
 ## Installation
 The following Python 3 packages are required:
-* BeautifulSoup
+* bs4
 * tabulate
 * csv
 * optparse
