@@ -63,10 +63,13 @@ def fetch_html_pages(page_count, search_term, category):
         url = get_url(page_number, term=search_term, category=category)
         r = requests.get(url)
 
-        if r.status_code == 302:
+        if r.history:
             # 302 means last page was exceeded
-            # -> exit loop
-            break
+            if r.history[0].status_code == 302:
+                # exit loop
+                break
+            else:
+                exit('Unexpected history when requesting ' + url)
         elif r.status_code != 200:
             # unexpected status code
             exit('HTTP code is ' + str(r.status))
