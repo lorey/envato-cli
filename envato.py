@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # see http://www.ibm.com/developerworks/aix/library/au-pythocli/index.html
 import csv
 import optparse
