@@ -10,15 +10,15 @@ videohive, audiojungle, graphicriver, photodune, and 3docean. The tool is writte
 These are some examples of how to use envato-cli.
 
 ### Basic invocation, overview, and help
-    python3 envato.py --help
+    ./envato.py --help
 Lists all available commands and parameters.
 
 ### Listing the best admin templates
-    python3 envato.py -p 5 -c "site-templates" -s "admin"
+    ./envato.py -p 5 -c "site-templates" -s "admin"
 Lists the best admin templates (-s "admin") from the "site-template" category on the first five pages (-p 5).
 
 ### Storing search results for string "test" as a CSV file
-    python3 envato.py -p 5 -s test -o "csv" > items.csv
+    ./envato.py -p 5 -s test -o "csv" > items.csv
 Saves the best templates that contain the word test (-s "test") into `items.csv`.
 
 ## Installation
