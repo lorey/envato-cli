@@ -85,7 +85,7 @@ def output_csv(items):
     list_writer = csv.DictWriter(
         sys.stdout,
         fieldnames=items[0].keys(),
-        delimiter=';',
+        delimiter=',',
         quotechar='"',
         quoting=csv.QUOTE_MINIMAL
     )
